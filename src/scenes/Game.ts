@@ -14,6 +14,7 @@ export default class Bubbles extends Phaser.Scene {
   hiscore: number = 0
   score: number = 0
   bombs: number = 0
+  reset: number = 0
 
   gravityMin: number = 100
   gameover: boolean = false
@@ -74,7 +75,22 @@ export default class Bubbles extends Phaser.Scene {
 
   update() {
 
-    if (this.gameover) return
+    if (this.gameover && isPressed && this.reset >50) {
+      isPressed = false
+      this.reset =0
+      this.gameover = false
+      this.score = 0
+      this.bombs = 0
+      this.reset = 0
+      this.gravityMin = 100
+
+      this.scene.stop('Bubbles')
+      this.scene.start('Start')
+    }
+
+    if (this.gameover) {
+      this.reset++
+    }
 
     if (this.bombs >= BOMBS_TO_HIT_BEFORE_GAME_OVER) {
       this.gameover = true
@@ -109,7 +125,7 @@ export default class Bubbles extends Phaser.Scene {
     // Random start point
     const position = Phaser.Math.Between(50, 550);
     // Add random gravity
-    const gravity = Phaser.Math.Between(this.gravityMin, this.gravityMin + 100);
+    const gravity = Phaser.Math.Between(this.gravityMin, this.gravityMin + 200);
     // Get type of item
     const rand = Phaser.Math.Between(0, 100)
     const name = rand < 25 ? "blue" : rand > 25 && rand < 50 ? "green"
@@ -121,6 +137,8 @@ export default class Bubbles extends Phaser.Scene {
       .setName(name);
     this.physics.add.overlap(el, this.collider!, this.outOfBounds, undefined, this.game);
     this.physics.add.overlap(el, this.ground!, this.checkForHit, undefined, this.game);
+
+    
 
   }
 

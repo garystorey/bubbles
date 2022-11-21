@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 
 let isPressed =  false
 
-export default class Bubbles extends Phaser.Scene { 
+export default class Start extends Phaser.Scene { 
 
     scoring?: Phaser.Physics.Arcade.StaticGroup
 
@@ -10,7 +10,7 @@ export default class Bubbles extends Phaser.Scene {
         super('Start')
         document.addEventListener('keyup', (e) => {
           e.preventDefault();
-          if (e.key === ' ') isPressed = true
+          if (e.key === 'Enter') isPressed = true
         })
     }
 
@@ -35,14 +35,12 @@ export default class Bubbles extends Phaser.Scene {
         this.add.text(270,400,'Hit 5 bombs and the game is over', {fontSize: '22px'})
 
         this.add.text(100,500, 'Hit the SPACEBAR when the bubble crosses the bar.')
-        this.add.text(100,550, 'Hit the SPACEBAR to begin.')
+        this.add.text(100,550, 'Hit ENTER to begin.')
     }
 
     update() {
         if (!isPressed) return
         this.scene.stop('Start')
-        this.scene.remove('Start')
-        this.scene.switch('Bubbles')
         this.scene.start('Bubbles')
         isPressed= false
     }
