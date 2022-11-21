@@ -57,10 +57,10 @@ export default class Bubbles extends Phaser.Scene {
     this.ground = this.physics.add.staticGroup();
     this.collider = this.physics.add.staticGroup();
 
-    this.ground.create(225, 620, "ground");
-    this.ground.create(600, 620, "ground");
-    this.collider.create(225, 680, "collider");
-    this.collider.create(600, 680, "collider");
+    this.ground.create(225, 610, "ground");
+    this.ground.create(600, 610, "ground");
+    this.collider.create(225, 700, "collider");
+    this.collider.create(600, 700, "collider");
 
     scoreText = this.add.text(16, 16, "Score: 0", { fontSize: "16px", color: '#eee' });
     bombText = this.add.text(450, 16, "Bombs Hit: 0", { fontSize: "16px", color: "#eee" });
@@ -96,6 +96,7 @@ export default class Bubbles extends Phaser.Scene {
         hiscoreText.setText(`High Score: ${this.hiscore}`);
         localStorage.setItem("bomber_high_score", String(this.score));
       }
+  
       return
     }
 
@@ -120,6 +121,7 @@ export default class Bubbles extends Phaser.Scene {
       .setName(name);
     this.physics.add.overlap(el, this.collider!, this.outOfBounds, undefined, this.game);
     this.physics.add.overlap(el, this.ground!, this.checkForHit, undefined, this.game);
+
   }
 
   outOfBounds(el: Phaser.GameObjects.GameObject) {
