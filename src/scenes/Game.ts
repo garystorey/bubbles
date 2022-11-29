@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 
 let isPressed = false
+
 const BOMBS_TO_HIT_BEFORE_GAME_OVER = 5
 
 let scoreText: Phaser.GameObjects.Text,
@@ -120,15 +121,10 @@ export default class Bubbles extends Phaser.Scene {
 
     if (Phaser.Math.Between(0, 100) < 95) return
 
-    // update speed based on score
-    if (this.score % 5000 === 0 && this.score > 0) {
-      this.gravityMin += 100
-    }
-    // Random start point
+    if (this.score % 5000 === 0 && this.score > 0) this.gravityMin += 50
+
     const position = Phaser.Math.Between(50, 550);
-    // Add random gravity
     const gravity = Phaser.Math.Between(this.gravityMin, this.gravityMin + 200);
-    // Get type of item
     const rand = Phaser.Math.Between(0, 100)
     const name = rand < 30 ? "bomb" : rand > 30 && rand < 60 ? "gem"
       : rand > 60 && rand < 80 ? "clover" : "watermelon";
@@ -136,7 +132,6 @@ export default class Bubbles extends Phaser.Scene {
     const el = this.physics.add.sprite(position,75,'items', `${name}-1.png`).setGravityY(gravity).setName(name).setScale(0.25).play(name,true)
     this.physics.add.overlap(el, this.collider!, this.outOfBounds, undefined, this.game);
     this.physics.add.overlap(el, this.ground!, this.checkForHit, undefined, this.game);
-   
 
   }
 
