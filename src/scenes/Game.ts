@@ -5,8 +5,8 @@ let isPressed = false
 const BOMBS_TO_HIT_BEFORE_GAME_OVER = 5
 
 let scoreText: Phaser.GameObjects.Text,
-    bombText: Phaser.GameObjects.Text,
-    hiscoreText: Phaser.GameObjects.Text
+  bombText: Phaser.GameObjects.Text,
+  hiscoreText: Phaser.GameObjects.Text
 export default class Bubbles extends Phaser.Scene {
 
   ground?: Phaser.Physics.Arcade.StaticGroup
@@ -20,10 +20,13 @@ export default class Bubbles extends Phaser.Scene {
   gravityMin: number = 100
   gameover: boolean = false
 
+  catch?: Phaser.Sound.BaseSound
+  explosion?: Phaser.Sound.BaseSound
+
   constructor() {
     super('Bubbles');
 
-    this.outOfBounds =  this.outOfBounds.bind(this)
+    this.outOfBounds = this.outOfBounds.bind(this)
     this.checkForHit = this.checkForHit.bind(this)
 
     this.hiscore = Number(localStorage.getItem("bomber_high_score")) || 0
@@ -43,19 +46,24 @@ export default class Bubbles extends Phaser.Scene {
   }
 
   preload() {
-    this.load.atlas('items','sprite.png','sprite.json')
+    this.load.atlas('items', 'sprite.png', 'sprite.json')
     this.load.image("ground", "/ground.png");
     this.load.image("collider", "/collider.png");
     this.load.image("bg", "bg.jpg");
+    this.load.audio('explode', ['explode.ogg'])
+    this.load.audio('catch', ['catch.ogg'])
   }
 
   create() {
 
+    this.catch = this.sound.add("catch", { loop: false });
+    this.explosion = this.sound.add("explode", { loop: false });
+
     this.add.image(500, 500, "bg");
-    this.anims.create({key:'bomb', frames: this.anims.generateFrameNames('items', { prefix: 'bomb-', suffix:'.png', start:1, end:8 }), repeat:-1,duration: 1000})
-    this.anims.create({key:'gem', frames: this.anims.generateFrameNames('items', { prefix: 'gem-', suffix:'.png', start:1, end:8 }), repeat:-1,duration: 1500})
-    this.anims.create({key:'clover', frames: this.anims.generateFrameNames('items', { prefix: 'clover-', suffix:'.png', start:1, end:8 }), repeat:-1,duration: 1000})
-    this.anims.create({key:'watermelon', frames: this.anims.generateFrameNames('items', { prefix: 'watermelon-', suffix:'.png', start:1, end:8 }), repeat:-1,duration: 1500})
+    this.anims.create({ key: 'bomb', frames: this.anims.generateFrameNames('items', { prefix: 'bomb-', suffix: '.png', start: 1, end: 8 }), repeat: -1, duration: 1000 })
+    this.anims.create({ key: 'gem', frames: this.anims.generateFrameNames('items', { prefix: 'gem-', suffix: '.png', start: 1, end: 8 }), repeat: -1, duration: 1500 })
+    this.anims.create({ key: 'clover', frames: this.anims.generateFrameNames('items', { prefix: 'clover-', suffix: '.png', start: 1, end: 8 }), repeat: -1, duration: 1000 })
+    this.anims.create({ key: 'watermelon', frames: this.anims.generateFrameNames('items', { prefix: 'watermelon-', suffix: '.png', start: 1, end: 8 }), repeat: -1, duration: 1500 })
 
 
     this.ground = this.physics.add.staticGroup();
@@ -78,9 +86,9 @@ export default class Bubbles extends Phaser.Scene {
 
   update() {
 
-    if (this.gameover && isPressed && this.reset >50) {
+    if (this.gameover && isPressed && this.reset > 50) {
       isPressed = false
-      this.reset =0
+      this.reset = 0
       this.gameover = false
       this.score = 0
       this.bombs = 0
@@ -115,7 +123,7 @@ export default class Bubbles extends Phaser.Scene {
         hiscoreText.setText(`High Score: ${this.hiscore}`);
         localStorage.setItem("bomber_high_score", String(this.score));
       }
-  
+
       return
     }
 
@@ -129,7 +137,7 @@ export default class Bubbles extends Phaser.Scene {
     const name = rand < 30 ? "bomb" : rand > 30 && rand < 60 ? "gem"
       : rand > 60 && rand < 80 ? "clover" : "watermelon";
 
-    const el = this.physics.add.sprite(position,75,'items', `${name}-1.png`).setGravityY(gravity).setName(name).setScale(0.25).play(name,true)
+    const el = this.physics.add.sprite(position, 75, 'items', `${name}-1.png`).setGravityY(gravity).setName(name).setScale(0.25).play(name, true)
     this.physics.add.overlap(el, this.collider!, this.outOfBounds, undefined, this.game);
     this.physics.add.overlap(el, this.ground!, this.checkForHit, undefined, this.game);
 
@@ -141,8 +149,8 @@ export default class Bubbles extends Phaser.Scene {
     el.destroy();
     this.score -= points;
     if (this.score < 0) this.score = 0;
-    scoreText.setText(`Score: ${this.score||0}`);
-    bombText.setText(`Bombs Hit: ${this.bombs||0}`);
+    scoreText.setText(`Score: ${this.score || 0}`);
+    bombText.setText(`Bombs Hit: ${this.bombs || 0}`);
   }
 
   checkForHit(el: Phaser.GameObjects.GameObject) {
@@ -150,11 +158,12 @@ export default class Bubbles extends Phaser.Scene {
     if (!isPressed) return
     if (el.name === "bomb") this.bombs++;
     const points = el.name === "watermelon" ? 500 : el.name === "clover" ? 250 : el.name === "gem" ? 50 : 0;
+    if (points === 0) this.explosion?.play()
     el.destroy();
     this.score += points;
     if (this.score < 0) this.score = 0;
-    scoreText.setText(`Score: ${this.score||0}`);
-    bombText.setText(`Bombs Hit: ${this.bombs||0}`);
+    scoreText.setText(`Score: ${this.score || 0}`);
+    bombText.setText(`Bombs Hit: ${this.bombs || 0}`);
   }
 
 }
