@@ -23,7 +23,6 @@ export default class Start extends Phaser.Scene {
 
     create() {
 
-        this.add.rectangle(0,0,1200,900,'#333','.25')
         this.scoring = this.physics.add.staticGroup();
         this.scoring.create(100,100, 'blue')
         this.scoring.create(100,200, 'green')

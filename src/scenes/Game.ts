@@ -42,10 +42,7 @@ export default class Bubbles extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image("blue", "/blue.png");
-    this.load.image("green", "/green.png");
-    this.load.image("red", "/red.png");
-    this.load.image("bomb", "/bomb.png");
+    this.load.atlas('items','sprite.png','sprite.json')
     this.load.image("ground", "/ground.png");
     this.load.image("collider", "/collider.png");
     this.load.image("bg", "bg.jpg");
@@ -54,6 +51,11 @@ export default class Bubbles extends Phaser.Scene {
   create() {
 
     this.add.image(500, 500, "bg");
+    this.anims.create({key:'bomb', frames: this.anims.generateFrameNames('items', { prefix: 'bomb-', suffix:'.png', start:1, end:8 }), repeat:-1,duration: 1000})
+    this.anims.create({key:'gem', frames: this.anims.generateFrameNames('items', { prefix: 'gem-', suffix:'.png', start:1, end:8 }), repeat:-1,duration: 1500})
+    this.anims.create({key:'clover', frames: this.anims.generateFrameNames('items', { prefix: 'clover-', suffix:'.png', start:1, end:8 }), repeat:-1,duration: 1000})
+    this.anims.create({key:'watermelon', frames: this.anims.generateFrameNames('items', { prefix: 'watermelon-', suffix:'.png', start:1, end:8 }), repeat:-1,duration: 1500})
+
 
     this.ground = this.physics.add.staticGroup();
     this.collider = this.physics.add.staticGroup();
@@ -128,23 +130,19 @@ export default class Bubbles extends Phaser.Scene {
     const gravity = Phaser.Math.Between(this.gravityMin, this.gravityMin + 200);
     // Get type of item
     const rand = Phaser.Math.Between(0, 100)
-    const name = rand < 25 ? "blue" : rand > 25 && rand < 50 ? "green"
-      : rand > 50 && rand < 75 ? "red" : "bomb";
+    const name = rand < 30 ? "bomb" : rand > 30 && rand < 60 ? "gem"
+      : rand > 60 && rand < 80 ? "clover" : "watermelon";
 
-    const el = this.physics.add
-      .image(position, 75, name)
-      .setGravityY(gravity)
-      .setName(name);
+    const el = this.physics.add.sprite(position,75,'items', `${name}-1.png`).setGravityY(gravity).setName(name).setScale(0.25).play(name,true)
     this.physics.add.overlap(el, this.collider!, this.outOfBounds, undefined, this.game);
     this.physics.add.overlap(el, this.ground!, this.checkForHit, undefined, this.game);
-
-    
+   
 
   }
 
   outOfBounds(el: Phaser.GameObjects.GameObject) {
     if (this.gameover) return;
-    const points = el.name === "blue" ? 100 : el.name === "green" ? 50 : 0;
+    const points = el.name === "watermelon" ? 100 : el.name === "clover" ? 50 : 0;
     el.destroy();
     this.score -= points;
     if (this.score < 0) this.score = 0;
@@ -156,7 +154,7 @@ export default class Bubbles extends Phaser.Scene {
     if (this.gameover) return
     if (!isPressed) return
     if (el.name === "bomb") this.bombs++;
-    const points = el.name === "blue" ? 500 : el.name === "green" ? 250 : el.name === "red" ? -250 : 0;
+    const points = el.name === "watermelon" ? 500 : el.name === "clover" ? 250 : el.name === "gem" ? 50 : 0;
     el.destroy();
     this.score += points;
     if (this.score < 0) this.score = 0;
