@@ -33,6 +33,7 @@ export default class Bubbles extends Phaser.Scene {
     this.score = 0;
     this.bombs = 0
 
+
     document.addEventListener('keydown', (e) => {
       e.preventDefault();
       if (e.key === ' ') isPressed = true
@@ -56,13 +57,11 @@ export default class Bubbles extends Phaser.Scene {
   create() {
 
     this.catch = this.sound.add("catch", { loop: false });
-
     this.add.image(500, 500, "bg");
     this.anims.create({ key: config.items[3], frames: this.anims.generateFrameNames('items', { prefix: `${config.items[3]}-`, suffix: '.png', start: 1, end: 8 }), repeat: -1, duration: 1000 })
     this.anims.create({ key: config.items[2], frames: this.anims.generateFrameNames('items', { prefix:  `${config.items[2]}-`, suffix: '.png', start: 1, end: 8 }), repeat: -1, duration: 1500 })
     this.anims.create({ key: config.items[1], frames: this.anims.generateFrameNames('items', { prefix:  `${config.items[1]}-`, suffix: '.png', start: 1, end: 8 }), repeat: -1, duration: 1000 })
     this.anims.create({ key: config.items[0], frames: this.anims.generateFrameNames('items', { prefix:  `${config.items[0]}-`, suffix: '.png', start: 1, end: 8 }), repeat: -1, duration: 1500 })
-
 
     this.ground = this.physics.add.staticGroup();
     this.collider = this.physics.add.staticGroup();
@@ -79,7 +78,6 @@ export default class Bubbles extends Phaser.Scene {
       color: "#eee"
     }
     );
-
   }
 
   update() {

@@ -6,6 +6,10 @@ const BOMBS_TO_HIT_BEFORE_GAME_OVER = 5
 export default class Start extends Phaser.Scene { 
 
     scoring?: Phaser.Physics.Arcade.StaticGroup
+    bg?: Phaser.Sound.BaseSound
+
+    isPlaying: boolean = false
+
 
     constructor() {
         super('Start')
@@ -17,9 +21,11 @@ export default class Start extends Phaser.Scene {
 
     preload() {
         this.load.atlas('items','sprite.png','sprite.json')
+        this.load.audio('bg', ['bgsound.mp3'])
     }
-
+    
     create() {
+        this.bg = this.sound.add("bg", { loop: true });
         this.anims.create({key:'bomb', frames: this.anims.generateFrameNames('items', { prefix: 'bomb-', suffix:'.png', start:1, end:8 }), repeat:-1,duration: 1000})        
         this.anims.create({key:'coin-gold', frames: this.anims.generateFrameNames('items', { prefix: 'coin-gold-', suffix:'.png', start:1, end:8 }), repeat:-1,duration: 1000, delay: 50})
         this.anims.create({key:'clover', frames: this.anims.generateFrameNames('items', { prefix: 'clover-', suffix:'.png', start:1, end:8 }), repeat:-1,duration: 1000, delay: 250})
@@ -40,6 +46,11 @@ export default class Start extends Phaser.Scene {
 
         this.add.text(0,500, 'Press SPACE when the bubble crosses the line',{fontSize: '22px'})
         this.add.text(50,550, 'Press ENTER to begin.',{fontSize: '38px'})
+
+        if (!this.isPlaying) {
+            this.isPlaying = true
+            this.bg?.play()
+        }
     }
 
     update() {
