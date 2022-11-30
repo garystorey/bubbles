@@ -50,14 +50,12 @@ export default class Bubbles extends Phaser.Scene {
     this.load.image("ground", "/ground.png");
     this.load.image("collider", "/collider.png");
     this.load.image("bg", "bg.jpg");
-    this.load.audio('explode', ['explode.ogg'])
-    this.load.audio('catch', ['catch.ogg'])
+    this.load.audio('catch', ['bomb.ogg'])
   }
 
   create() {
 
     this.catch = this.sound.add("catch", { loop: false });
-    this.explosion = this.sound.add("explode", { loop: false });
 
     this.add.image(500, 500, "bg");
     this.anims.create({ key: config.items[3], frames: this.anims.generateFrameNames('items', { prefix: `${config.items[3]}-`, suffix: '.png', start: 1, end: 8 }), repeat: -1, duration: 1000 })

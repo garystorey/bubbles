@@ -21,7 +21,7 @@ export default class Start extends Phaser.Scene {
 
     create() {
         this.anims.create({key:'bomb', frames: this.anims.generateFrameNames('items', { prefix: 'bomb-', suffix:'.png', start:1, end:8 }), repeat:-1,duration: 1000})        
-        this.anims.create({key:'gem', frames: this.anims.generateFrameNames('items', { prefix: 'gem-', suffix:'.png', start:1, end:8 }), repeat:-1,duration: 1000, delay: 50})
+        this.anims.create({key:'coin-gold', frames: this.anims.generateFrameNames('items', { prefix: 'coin-gold-', suffix:'.png', start:1, end:8 }), repeat:-1,duration: 1000, delay: 50})
         this.anims.create({key:'clover', frames: this.anims.generateFrameNames('items', { prefix: 'clover-', suffix:'.png', start:1, end:8 }), repeat:-1,duration: 1000, delay: 250})
         this.anims.create({key:'watermelon', frames: this.anims.generateFrameNames('items', { prefix: 'watermelon-', suffix:'.png', start:1, end:8 }), repeat:-1,duration: 1000, delay: 150})
 
@@ -29,7 +29,7 @@ export default class Start extends Phaser.Scene {
 
         this.physics.add.sprite(100,100,'items', `watermelon-1.png`).setScale(0.25).play('watermelon')
         this.physics.add.sprite(100,200,'items', `clover-1.png`).setScale(0.25).play('clover')
-        this.physics.add.sprite(100,300,'items', `gem-1.png`).setScale(0.25).play('gem')
+        this.physics.add.sprite(100,300,'items', `coin-gold-1.png`).setScale(0.25).play('coin-gold')
         this.physics.add.sprite(100,400,'items', `bomb-1.png`).setScale(0.25).play('bomb')
 
         this.add.text(150,15,'SCORING', {fontSize: '32px'})
