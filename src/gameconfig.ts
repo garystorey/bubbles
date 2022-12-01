@@ -3,5 +3,5 @@ export default {
     //names are based on names in sprite.json
     items: ['watermelon','clover','coin-gold','bomb'],
     storage: 'bomber-high-score',
-        gravityIncrement: 100,
+    gravityIncrement: 50,
 }

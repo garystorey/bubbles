@@ -33,10 +33,10 @@ export default class Start extends Phaser.Scene {
 
         this.scoring = this.physics.add.staticGroup();
 
-        this.physics.add.sprite(100,100,'items', `watermelon-1.png`).setScale(0.25).play('watermelon')
-        this.physics.add.sprite(100,200,'items', `clover-1.png`).setScale(0.25).play('clover')
-        this.physics.add.sprite(100,300,'items', `coin-gold-1.png`).setScale(0.25).play('coin-gold')
-        this.physics.add.sprite(100,400,'items', `bomb-1.png`).setScale(0.25).play('bomb')
+        this.physics.add.sprite(100,100,'items', `watermelon-1.png`).setScale(0.25)
+        this.physics.add.sprite(100,200,'items', `clover-1.png`).setScale(0.25)
+        this.physics.add.sprite(100,300,'items', `coin-gold-1.png`).setScale(0.25)
+        this.physics.add.sprite(100,400,'items', `bomb-1.png`).setScale(0.25)
 
         this.add.text(150,15,'SCORING', {fontSize: '32px'})
         this.add.text(200,100,'500 points  -250/miss', {fontSize: '22px'})
@@ -46,14 +46,13 @@ export default class Start extends Phaser.Scene {
 
         this.add.text(0,500, 'Press SPACE when the bubble crosses the line',{fontSize: '22px'})
         this.add.text(50,550, 'Press ENTER to begin.',{fontSize: '38px'})
+    }
 
+    update() {
         if (!this.isPlaying) {
             this.isPlaying = true
             this.bg?.play()
         }
-    }
-
-    update() {
         if (!isPressed) return
         this.scene.stop('Start')
         this.scene.start('Bubbles')

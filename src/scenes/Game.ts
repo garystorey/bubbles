@@ -11,6 +11,7 @@ export default class Bubbles extends Phaser.Scene {
 
   ground?: Phaser.Physics.Arcade.StaticGroup
   collider?: Phaser.Physics.Arcade.StaticGroup
+  items?: Phaser.Physics.Arcade.Group
 
   hiscore: number = 0
   score: number = 0
@@ -48,16 +49,19 @@ export default class Bubbles extends Phaser.Scene {
 
   preload() {
     this.load.atlas('items', 'sprite.png', 'sprite.json')
+    this.load.audio('explosion', ['boom.wav'])
+    this.load.audio('catch', ['catch.ogg'])
     this.load.image("ground", "/ground.png");
     this.load.image("collider", "/collider.png");
     this.load.image("bg", "bg.jpg");
-    this.load.audio('catch', ['bomb.ogg'])
   }
 
   create() {
 
+    this.explosion = this.sound.add("explosion", { loop: false });
     this.catch = this.sound.add("catch", { loop: false });
     this.add.image(500, 500, "bg");
+
     this.anims.create({ key: config.items[3], frames: this.anims.generateFrameNames('items', { prefix: `${config.items[3]}-`, suffix: '.png', start: 1, end: 8 }), repeat: -1, duration: 1000 })
     this.anims.create({ key: config.items[2], frames: this.anims.generateFrameNames('items', { prefix:  `${config.items[2]}-`, suffix: '.png', start: 1, end: 8 }), repeat: -1, duration: 1500 })
     this.anims.create({ key: config.items[1], frames: this.anims.generateFrameNames('items', { prefix:  `${config.items[1]}-`, suffix: '.png', start: 1, end: 8 }), repeat: -1, duration: 1000 })
@@ -65,6 +69,7 @@ export default class Bubbles extends Phaser.Scene {
 
     this.ground = this.physics.add.staticGroup();
     this.collider = this.physics.add.staticGroup();
+    this.items = this.physics.add.group()
 
     this.ground.create(225, 610, "ground");
     this.ground.create(600, 610, "ground");
@@ -113,6 +118,10 @@ export default class Bubbles extends Phaser.Scene {
         fontSize: "50px",
         color: "#eee"
       });
+      this.add.text(175, 350, "Hit SPACE to return", {
+        fontSize: "24px",
+        color: "#eee"
+      });
 
       if (this.score > this.hiscore) {
         this.hiscore = this.score;
@@ -123,20 +132,21 @@ export default class Bubbles extends Phaser.Scene {
       return
     }
 
-    if (Phaser.Math.Between(0, 100) < 95) return
+    if (Phaser.Math.Between(0, 100) < 98) return
 
-    if (this.score % 5000 === 0 && this.score > 0) this.gravityMin += 50
+    if (this.score % 5000 === 0 && this.score > 0) this.gravityMin += config.gravityIncrement
 
     const position = Phaser.Math.Between(50, 550);
-    const gravity = Phaser.Math.Between(this.gravityMin, this.gravityMin + 200);
+    const gravity = Phaser.Math.Between(this.gravityMin, this.gravityMin + 100);
     const rand = Phaser.Math.Between(0, 100)
     const name = rand < 30 ? config.items[3] : rand > 30 && rand < 60 ? config.items[2]
       : rand > 60 && rand < 80 ? config.items[1] : config.items[0];
 
-    const el = this.physics.add.sprite(position, 75, 'items', `${name}-1.png`).setGravityY(gravity).setName(name).setScale(0.25).play(name, true)
-    this.physics.add.overlap(el, this.collider!, this.outOfBounds, undefined, this.game);
+    const el = this.physics.add.sprite(position, 75, 'items', `${name}-1.png`)
+    this.items?.add(el,true)
+    el.setBodySize(el.width,el.height,true).setGravityY(gravity).setName(name).setScale(0.25).play(name, true)
+    this.physics.add.collider(el, this.collider!, this.outOfBounds, undefined, this.game);
     this.physics.add.overlap(el, this.ground!, this.checkForHit, undefined, this.game);
-
   }
 
   outOfBounds(el: Phaser.GameObjects.GameObject) {
@@ -146,20 +156,30 @@ export default class Bubbles extends Phaser.Scene {
     this.score -= points;
     if (this.score < 0) this.score = 0;
     scoreText.setText(`Score: ${this.score || 0}`);
-    bombText.setText(`Bombs Hit: ${this.bombs || 0}`);
   }
 
   checkForHit(el: Phaser.GameObjects.GameObject) {
     if (this.gameover) return
     if (!isPressed) return
-    if (el.name === config.items[3]) this.bombs++;
+
+    // hit a bomb
+    if (el.name === config.items[3]) {
+      this.bombs++
+      const b = this.bombs
+      this.explosion?.play()
+      this.items?.children.each(i => i.destroy())
+      this.bombs=b
+      bombText.setText(`Bombs Hit: ${this.bombs || 0}`);
+      el.destroy();
+      return
+    }
+    // hit something else
     const points = el.name === config.items[0] ? 500 : el.name === config.items[2] ? 250 : el.name === config.items[1] ? 50 : 0;
-    if (points === 0) this.catch?.play()
+    if (points > 0) this.catch?.play()
     el.destroy();
     this.score += points;
     if (this.score < 0) this.score = 0;
     scoreText.setText(`Score: ${this.score || 0}`);
-    bombText.setText(`Bombs Hit: ${this.bombs || 0}`);
   }
 
 }
