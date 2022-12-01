@@ -174,9 +174,10 @@ export default class Bubbles extends Phaser.Scene {
       return
     }
     // hit something else
-    const points = el.name === config.items[0] ? 500 : el.name === config.items[2] ? 250 : el.name === config.items[1] ? 50 : 0;
+    const name = el.name
+    el.destroy()
+    const points = name === config.items[0] ? 500 : name === config.items[2] ? 250 : name === config.items[1] ? 50 : 0;
     if (points > 0) this.catch?.play()
-    el.destroy();
     this.score += points;
     if (this.score < 0) this.score = 0;
     scoreText.setText(`Score: ${this.score || 0}`);
