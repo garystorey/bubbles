@@ -13,16 +13,17 @@ export default class Bubbles extends Phaser.Scene {
   collider?: Phaser.Physics.Arcade.StaticGroup
   items?: Phaser.Physics.Arcade.Group
 
+  catch?: Phaser.Sound.BaseSound
+  explosion?: Phaser.Sound.BaseSound
+
   hiscore: number = 0
   score: number = 0
   bombs: number = 0
   reset: number = 0
-
-  gravityMin: number = config.gravityIncrement
   gameover: boolean = false
 
-  catch?: Phaser.Sound.BaseSound
-  explosion?: Phaser.Sound.BaseSound
+  chanceToAdd: number = config.startingDropPercentage
+  gravityMin: number = config.gravityIncrement
 
   constructor() {
     super('Bubbles');
@@ -132,9 +133,15 @@ export default class Bubbles extends Phaser.Scene {
       return
     }
 
-    if (Phaser.Math.Between(0, 100) < 98) return
+    if (Phaser.Math.Between(0, 100) < this.chanceToAdd) return
 
-    if (this.score % config.incrementEvery === 0 && this.score > 0) this.gravityMin += config.gravityIncrement
+    if (this.score % config.incrementEvery === 0 && this.score > 0) {
+      this.gravityMin += config.gravityIncrement
+    }
+    if (this.score % (config.incrementEvery*2) === 0 && this.score > 0) {
+      this.chanceToAdd--
+      if (this.chanceToAdd <93) this.chanceToAdd=93
+    }
 
     const position = Phaser.Math.Between(50, 550);
     const gravity = Phaser.Math.Between(this.gravityMin, this.gravityMin + 150);
@@ -144,7 +151,7 @@ export default class Bubbles extends Phaser.Scene {
 
     const el = this.physics.add.sprite(position, 75, 'items', `${name}-1.png`)
     this.items?.add(el,true)
-    el.setBodySize(el.width,el.height,true).setGravityY(gravity).setName(name).setScale(0.25).play(name, true)
+    el.setBodySize(el.width,el.height,true).setGravityY(gravity).setName(name).setScale(0.25).setOffset(0,-75).play(name, true)
     this.physics.add.collider(el, this.collider!, this.outOfBounds, undefined, this.game);
     this.physics.add.overlap(el, this.ground!, this.checkForHit, undefined, this.game);
   }
@@ -159,16 +166,17 @@ export default class Bubbles extends Phaser.Scene {
   }
 
   checkForHit(el: Phaser.GameObjects.GameObject) {
+    let inHit = false
     if (this.gameover) return
     if (!isPressed) return
 
     // hit a bomb
-    if (el.name === config.items[3]) {
-      this.bombs++
+    if (el.name === config.items[3] && !inHit) {
+      inHit=true
       const b = this.bombs
       this.explosion?.play()
       this.items?.children.each(i => i.destroy())
-      this.bombs=b
+      this.bombs=b+1
       bombText.setText(`Bombs Hit: ${this.bombs || 0}`);
       el.destroy();
       return
@@ -181,6 +189,7 @@ export default class Bubbles extends Phaser.Scene {
     this.score += points;
     if (this.score < 0) this.score = 0;
     scoreText.setText(`Score: ${this.score || 0}`);
+    inHit = false
   }
 
 }
