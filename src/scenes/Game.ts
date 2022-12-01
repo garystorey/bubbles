@@ -134,10 +134,10 @@ export default class Bubbles extends Phaser.Scene {
 
     if (Phaser.Math.Between(0, 100) < 98) return
 
-    if (this.score % 5000 === 0 && this.score > 0) this.gravityMin += config.gravityIncrement
+    if (this.score % config.incrementEvery === 0 && this.score > 0) this.gravityMin += config.gravityIncrement
 
     const position = Phaser.Math.Between(50, 550);
-    const gravity = Phaser.Math.Between(this.gravityMin, this.gravityMin + 100);
+    const gravity = Phaser.Math.Between(this.gravityMin, this.gravityMin + 150);
     const rand = Phaser.Math.Between(0, 100)
     const name = rand < 30 ? config.items[3] : rand > 30 && rand < 60 ? config.items[2]
       : rand > 60 && rand < 80 ? config.items[1] : config.items[0];
